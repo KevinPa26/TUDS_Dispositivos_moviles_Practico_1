@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Practico1</string>
+    <string name="conversor_de_moneda">Conversor de Moneda</string>
+    <string name="d_lares_usd">Dólares (USD):</string>
+    <string name="ingres_el_monto_en_usd">Ingresá el monto en USD</string>
+    <string name="euros_eur">Euros (EUR):</string>
+    <string name="ingres_el_monto_en_eur">Ingresá el monto en EUR</string>
+    <string name="valor_de_conversi_n">Valor de conversión:</string>
+    <string name="cambiar_valor">Cambiar valor</string>
+    <string name="tipo_de_conversi_n">Tipo de conversión:</string>
+    <string name="convertir_a_d_lares">Convertir a Dólares</string>
+    <string name="convertir_a_euros">Convertir a Euros</string>
+    <string name="convertir">Convertir</string>
+    <string name="tipo_de_cambio">Tipo de cambio</string>
+    <string name="_1usd_0_87eur">1USD = 0.87EUR</string>
+    <string name="monto_en_dolares">Monto en Dólares</string>
+    <string name="monto_en_euros">Monto en Euros</string>
 </resources>

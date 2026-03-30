@@ -1,5 +1,8 @@
 package com.s23.practico1;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class ConversorModelo {
     private double tipoDeCambio; // 1 USD = X EUR
 
@@ -16,10 +19,14 @@ public class ConversorModelo {
     }
 
     public double convertirAEuros(double dolares) {
-        return dolares * tipoDeCambio;
+        BigDecimal resultado = BigDecimal.valueOf(dolares * tipoDeCambio);
+        resultado = resultado.setScale(2, RoundingMode.HALF_DOWN);
+        return resultado.doubleValue();
     }
 
     public double convertirADolares(double euros) {
-        return euros / tipoDeCambio;
+        BigDecimal resultado = BigDecimal.valueOf(euros / tipoDeCambio);
+        resultado = resultado.setScale(2, RoundingMode.HALF_DOWN);
+        return resultado.doubleValue();
     }
 }

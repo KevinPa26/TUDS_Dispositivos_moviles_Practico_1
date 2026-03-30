@@ -1,6 +1,8 @@
 package com.s23.practico1;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -11,8 +13,8 @@ public class MainActivityViewModel extends AndroidViewModel {
     private ConversorModelo modelo;
     private MutableLiveData<String> resultado = new MutableLiveData<>();
     // Dejo estas variables para que el equipo las use en la UI
-    private MutableLiveData<Boolean> dolaresHabilitado = new MutableLiveData<>(true);
-    private MutableLiveData<Boolean> eurosHabilitado = new MutableLiveData<>(true);
+    private MutableLiveData<Boolean> dolaresHabilitado = new MutableLiveData<>(false);
+    private MutableLiveData<Boolean> eurosHabilitado = new MutableLiveData<>(false);
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -34,10 +36,10 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     // Método para  los RadioButtons
     public void configurarCampos(int idSeleccionado) {
-        if (idSeleccionado == R.id.rbDolarAEuro) {
+        if (idSeleccionado == R.id.rbEuros) {
             dolaresHabilitado.setValue(true);
             eurosHabilitado.setValue(false);
-        } else if (idSeleccionado == R.id.rbEuroADolar) {
+        } else if (idSeleccionado == R.id.rbDolares) {
             dolaresHabilitado.setValue(false);
             eurosHabilitado.setValue(true);
         }
@@ -56,6 +58,25 @@ public class MainActivityViewModel extends AndroidViewModel {
             }
         } catch (Exception e) {
             resultado.setValue("Error");
+        }
+    }
+
+    public void calcularVersionDos(String inDolares, String inEuros) {
+        try {
+            double res;
+
+            if(dolaresHabilitado.getValue() && !eurosHabilitado.getValue()) {
+                res = modelo.convertirAEuros(Double.parseDouble(inDolares));
+                resultado.setValue(res + " EUR");
+            } else if (eurosHabilitado.getValue() && !dolaresHabilitado.getValue()) {
+                res = modelo.convertirADolares(Double.parseDouble(inEuros));
+                resultado.setValue(res + " USD");
+            } else {
+                resultado.setValue("NADA");
+            }
+        } catch (Exception e) {
+            resultado.setValue("ERROR");
+            Log.d("ERROR", e.toString());
         }
     }
 }

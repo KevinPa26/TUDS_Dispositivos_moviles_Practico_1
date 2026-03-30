@@ -1,7 +1,6 @@
 package com.s23.practico1;
 
 import android.os.Bundle;
-import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.s23.practico1.databinding.ActivityMainBinding;
@@ -20,27 +19,26 @@ public class MainActivity extends AppCompatActivity {
         vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         // Observadores
-        vm.getResultado().observe(this, res -> binding.etTotal.setText(res));
 
-        vm.getDolaresHabilitado().observe(this, habilitado -> {
-            binding.etDolar.setEnabled(habilitado);
-            if (!habilitado) binding.etDolar.setText("");
+        vm.getResultado().observe(this, res -> {
+            if(res.contains("EUR")) {
+                binding.etEuros.setText(res);
+            } else if (res.contains("USD")) {
+                binding.etDolares.setText(res);
+            }
         });
 
-        vm.getEurosHabilitado().observe(this, habilitado -> {
-            binding.etEuro.setEnabled(habilitado);
-            if (!habilitado) binding.etEuro.setText("");
-        });
+        vm.getDolaresHabilitado().observe(this, habilitado -> binding.etDolares.setEnabled(habilitado));
+
+        vm.getEurosHabilitado().observe(this, habilitado -> binding.etEuros.setEnabled(habilitado));
 
         // Listeners
-        binding.rGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            vm.alCambiarTipoConversion(checkedId);
-        });
+        binding.rgTipoConversion.setOnCheckedChangeListener((group, checkedId) -> vm.configurarCampos(checkedId));
 
         binding.btnConvertir.setOnClickListener(v -> {
-            String dolares = binding.etDolar.getText().toString();
-            String euros = binding.etEuro.getText().toString();
-            vm.convertir(dolares, euros);
+            String dolares = binding.etDolares.getText().toString();
+            String euros = binding.etEuros.getText().toString();
+            vm.calcularVersionDos(dolares, euros);
         });
     }
 }
