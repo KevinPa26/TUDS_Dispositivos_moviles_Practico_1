@@ -22,9 +22,7 @@ public class MainActivity extends AppCompatActivity {
         // --- Observadores ---
 
         vm.getMensajeToast().observe(this, msj -> {
-            if (msj != null && !msj.isEmpty()) {
-                Toast.makeText(this, msj, Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(this, msj, Toast.LENGTH_SHORT).show();
         });
 
         vm.getTipoCambioActual().observe(this, valor -> {

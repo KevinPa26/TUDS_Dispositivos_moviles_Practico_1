@@ -15,7 +15,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private final MutableLiveData<String> resultadoEuros = new MutableLiveData<>("");
     private final MutableLiveData<Integer> rbSeleccionadoId = new MutableLiveData<>(R.id.rbEuros);
     private final MutableLiveData<Double> tipoCambioActual = new MutableLiveData<>(0.92);
-    private final MutableLiveData<String> mensajeToast = new MutableLiveData<>();
+    private final SingleLiveEvent<String> mensajeToast = new SingleLiveEvent<>();
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);

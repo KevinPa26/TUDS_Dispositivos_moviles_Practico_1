@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/d_lares_usd"
                     android:textSize="14sp"
-                    android:textColor="#555555"
+                    android:textColor="#FFFFFF"
                     android:paddingBottom="4dp" />
 
                 <EditText
@@ -56,6 +56,8 @@
                     android:layout_marginBottom="20dp"
                     android:background="@android:drawable/edit_text"
                     android:hint="@string/ingres_el_monto_en_usd"
+                    android:textColorHint="@color/hint_color"
+                    android:textColor="@color/black"
                     android:inputType="numberDecimal"
                     android:padding="8dp"
                     android:textSize="16sp" />
@@ -66,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/euros_eur"
                     android:textSize="14sp"
-                    android:textColor="#555555"
+                    android:textColor="#FFFFFF"
                     android:paddingBottom="4dp" />
 
                 <EditText
@@ -74,8 +76,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/ingres_el_monto_en_eur"
+                    android:textColorHint="@color/hint_color"
                     android:inputType="numberDecimal"
                     android:background="@android:drawable/edit_text"
+                    android:textColor="@color/black"
                     android:padding="8dp"
                     android:textSize="16sp"
                     android:layout_marginBottom="24dp" />
@@ -86,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/valor_de_conversi_n"
                     android:textSize="13sp"
-                    android:textColor="#777777"
+                    android:textColor="#FFFFFF"
                     android:paddingBottom="4dp" />
 
                 <LinearLayout
@@ -105,7 +109,7 @@
                         android:hint="@string/_1usd_0_87eur"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        android:textColor="#1A237E" />
+                        android:textColor="#FFFFFF" />
 
                     <!-- Botón para cambiar la cotización -->
                     <Button
@@ -149,7 +153,8 @@
                         android:text="@string/convertir_a_euros"
                         android:textSize="14sp"
                         android:buttonTint="#3F51B5"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="4dp"
+                        android:checked="true"/>
                 </RadioGroup>
 
                 <!-- Botón principal: Convertir -->
