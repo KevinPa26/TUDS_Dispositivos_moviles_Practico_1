@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             binding.etTipoCambio.setText(String.valueOf(valor));
         });
 
-        // Observadores específicos para cada resultado (sin lógica IF)
+        // Observadores de resultados (se limpian solos cuando el VM manda "")
         vm.getResultadoDolares().observe(this, res -> {
             binding.etDolares.setText(res);
         });
@@ -40,14 +40,10 @@ public class MainActivity extends AppCompatActivity {
             binding.etEuros.setText(res);
         });
 
-        vm.getDolaresHabilitado().observe(this, habilitado -> {
-            binding.etDolares.setEnabled(habilitado);
-            if (!habilitado) binding.etDolares.setText(""); 
-        });
-
-        vm.getEurosHabilitado().observe(this, habilitado -> {
-            binding.etEuros.setEnabled(habilitado);
-            if (!habilitado) binding.etEuros.setText("");
+        // Observador basado en el ID seleccionado (Sin booleanos externos)
+        vm.getRbSeleccionadoId().observe(this, id -> {
+            binding.etDolares.setEnabled(id == R.id.rbEuros);
+            binding.etEuros.setEnabled(id == R.id.rbDolares);
         });
 
         // --- Listeners ---

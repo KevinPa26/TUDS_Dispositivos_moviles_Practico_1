@@ -1,8 +1,6 @@
 package com.s23.practico1;
 
 import android.app.Application;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -15,8 +13,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private final ConversorModelo modelo;
     private final MutableLiveData<String> resultadoDolares = new MutableLiveData<>("");
     private final MutableLiveData<String> resultadoEuros = new MutableLiveData<>("");
-    private final MutableLiveData<Boolean> dolaresHabilitado = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> eurosHabilitado = new MutableLiveData<>(false);
+    private final MutableLiveData<Integer> rbSeleccionadoId = new MutableLiveData<>(R.id.rbEuros);
     private final MutableLiveData<Double> tipoCambioActual = new MutableLiveData<>(0.92);
     private final MutableLiveData<String> mensajeToast = new MutableLiveData<>();
 
@@ -27,8 +24,7 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public LiveData<String> getResultadoDolares() { return resultadoDolares; }
     public LiveData<String> getResultadoEuros() { return resultadoEuros; }
-    public LiveData<Boolean> getDolaresHabilitado() { return dolaresHabilitado; }
-    public LiveData<Boolean> getEurosHabilitado() { return eurosHabilitado; }
+    public LiveData<Integer> getRbSeleccionadoId() { return rbSeleccionadoId; }
     public LiveData<Double> getTipoCambioActual() { return tipoCambioActual; }
     public LiveData<String> getMensajeToast() { return mensajeToast; }
 
@@ -41,45 +37,41 @@ public class MainActivityViewModel extends AndroidViewModel {
             double valor = Double.parseDouble(nuevoValor);
             tipoCambioActual.setValue(valor);
             modelo.setTipoDeCambio(valor);
-            mensajeToast.setValue("Tipo de cambio actualizado correctamente");
+            mensajeToast.setValue("Tipo de cambio actualizado");
         } catch (NumberFormatException e) {
             mensajeToast.setValue("Valor de cambio inválido");
         }
     }
 
     public void configurarCampos(int idSeleccionado) {
-        if (idSeleccionado == R.id.rbEuros) {
-            dolaresHabilitado.setValue(true);
-            eurosHabilitado.setValue(false);
-        } else if (idSeleccionado == R.id.rbDolares) {
-            dolaresHabilitado.setValue(false);
-            eurosHabilitado.setValue(true);
-        }
+        rbSeleccionadoId.setValue(idSeleccionado);
+        // Al limpiar aquí, la Vista reaccionará borrando el texto
         resultadoDolares.setValue("");
         resultadoEuros.setValue("");
     }
 
     public void calcular(String inDolares, String inEuros) {
+        Integer id = rbSeleccionadoId.getValue();
+        if (id == null) return;
+
         try {
-            if (Boolean.TRUE.equals(dolaresHabilitado.getValue())) {
+            if (id == R.id.rbEuros) {
                 if (inDolares.isEmpty()) {
-                    mensajeToast.setValue("Por favor, ingrese un monto en USD");
+                    mensajeToast.setValue("Ingrese monto en USD");
                     return;
                 }
                 double res = modelo.convertirAEuros(Double.parseDouble(inDolares));
                 resultadoEuros.setValue(String.format(Locale.getDefault(), "%.2f EUR", res));
-            } else if (Boolean.TRUE.equals(eurosHabilitado.getValue())) {
+            } else if (id == R.id.rbDolares) {
                 if (inEuros.isEmpty()) {
-                    mensajeToast.setValue("Por favor, ingrese un monto en EUR");
+                    mensajeToast.setValue("Ingrese monto en EUR");
                     return;
                 }
                 double res = modelo.convertirADolares(Double.parseDouble(inEuros));
                 resultadoDolares.setValue(String.format(Locale.getDefault(), "%.2f USD", res));
-            } else {
-                mensajeToast.setValue("Seleccione una opción de conversión");
             }
         } catch (NumberFormatException e) {
-            mensajeToast.setValue("Error en los datos ingresados");
+            mensajeToast.setValue("Error en los datos");
         }
     }
 }
