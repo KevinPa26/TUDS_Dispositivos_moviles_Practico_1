@@ -4,16 +4,15 @@ plugins {
 
 android {
     namespace = "com.s23.practico1"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    // Las librerías actuales requieren compilar con SDK 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.s23.practico1"
-        minSdk = 36
-        targetSdk = 36
+        // minSdk define la versión mínima del teléfono donde se puede instalar (Android 8.0+)
+        minSdk = 26 
+        // targetSdk define para qué versión se diseñó la app
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 

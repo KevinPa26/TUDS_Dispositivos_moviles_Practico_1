@@ -1,6 +1,7 @@
 package com.s23.practico1;
 
 import android.os.Bundle;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.s23.practico1.databinding.ActivityMainBinding;
@@ -18,27 +19,49 @@ public class MainActivity extends AppCompatActivity {
         
         vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
-        // Observadores
+        // --- Observadores ---
 
-        vm.getResultado().observe(this, res -> {
-            if(res.contains("EUR")) {
-                binding.etEuros.setText(res);
-            } else if (res.contains("USD")) {
-                binding.etDolares.setText(res);
+        vm.getMensajeToast().observe(this, msj -> {
+            if (msj != null && !msj.isEmpty()) {
+                Toast.makeText(this, msj, Toast.LENGTH_SHORT).show();
             }
         });
 
-        vm.getDolaresHabilitado().observe(this, habilitado -> binding.etDolares.setEnabled(habilitado));
+        vm.getTipoCambioActual().observe(this, valor -> {
+            binding.etTipoCambio.setText(String.valueOf(valor));
+        });
 
-        vm.getEurosHabilitado().observe(this, habilitado -> binding.etEuros.setEnabled(habilitado));
+        // Observadores específicos para cada resultado (sin lógica IF)
+        vm.getResultadoDolares().observe(this, res -> {
+            binding.etDolares.setText(res);
+        });
 
-        // Listeners
-        binding.rgTipoConversion.setOnCheckedChangeListener((group, checkedId) -> vm.configurarCampos(checkedId));
+        vm.getResultadoEuros().observe(this, res -> {
+            binding.etEuros.setText(res);
+        });
+
+        vm.getDolaresHabilitado().observe(this, habilitado -> {
+            binding.etDolares.setEnabled(habilitado);
+            if (!habilitado) binding.etDolares.setText(""); 
+        });
+
+        vm.getEurosHabilitado().observe(this, habilitado -> {
+            binding.etEuros.setEnabled(habilitado);
+            if (!habilitado) binding.etEuros.setText("");
+        });
+
+        // --- Listeners ---
+
+        binding.rgTipoConversion.setOnCheckedChangeListener((group, checkedId) -> {
+            vm.configurarCampos(checkedId);
+        });
+
+        binding.btnCambiarValor.setOnClickListener(v -> {
+            vm.actualizarTipoCambio(binding.etTipoCambio.getText().toString());
+        });
 
         binding.btnConvertir.setOnClickListener(v -> {
-            String dolares = binding.etDolares.getText().toString();
-            String euros = binding.etEuros.getText().toString();
-            vm.calcularVersionDos(dolares, euros);
+            vm.calcular(binding.etDolares.getText().toString(), binding.etEuros.getText().toString());
         });
     }
 }

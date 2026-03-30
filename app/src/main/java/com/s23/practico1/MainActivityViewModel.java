@@ -8,33 +8,45 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Locale;
+
 public class MainActivityViewModel extends AndroidViewModel {
 
-    private ConversorModelo modelo;
-    private MutableLiveData<String> resultado = new MutableLiveData<>();
-    // Dejo estas variables para que el equipo las use en la UI
-    private MutableLiveData<Boolean> dolaresHabilitado = new MutableLiveData<>(false);
-    private MutableLiveData<Boolean> eurosHabilitado = new MutableLiveData<>(false);
+    private final ConversorModelo modelo;
+    private final MutableLiveData<String> resultadoDolares = new MutableLiveData<>("");
+    private final MutableLiveData<String> resultadoEuros = new MutableLiveData<>("");
+    private final MutableLiveData<Boolean> dolaresHabilitado = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> eurosHabilitado = new MutableLiveData<>(false);
+    private final MutableLiveData<Double> tipoCambioActual = new MutableLiveData<>(0.92);
+    private final MutableLiveData<String> mensajeToast = new MutableLiveData<>();
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
-        // Inicializamos con un tipo de cambio base (1 USD = 0.92 EUR)
-        modelo = new ConversorModelo(0.92);
+        modelo = new ConversorModelo(tipoCambioActual.getValue());
     }
 
-    public LiveData<String> getResultado() {
-        return resultado;
+    public LiveData<String> getResultadoDolares() { return resultadoDolares; }
+    public LiveData<String> getResultadoEuros() { return resultadoEuros; }
+    public LiveData<Boolean> getDolaresHabilitado() { return dolaresHabilitado; }
+    public LiveData<Boolean> getEurosHabilitado() { return eurosHabilitado; }
+    public LiveData<Double> getTipoCambioActual() { return tipoCambioActual; }
+    public LiveData<String> getMensajeToast() { return mensajeToast; }
+
+    public void actualizarTipoCambio(String nuevoValor) {
+        try {
+            if (nuevoValor == null || nuevoValor.isEmpty()) {
+                mensajeToast.setValue("Ingrese un valor de cambio");
+                return;
+            }
+            double valor = Double.parseDouble(nuevoValor);
+            tipoCambioActual.setValue(valor);
+            modelo.setTipoDeCambio(valor);
+            mensajeToast.setValue("Tipo de cambio actualizado correctamente");
+        } catch (NumberFormatException e) {
+            mensajeToast.setValue("Valor de cambio inválido");
+        }
     }
 
-    public LiveData<Boolean> getDolaresHabilitado() {
-        return dolaresHabilitado;
-    }
-
-    public LiveData<Boolean> getEurosHabilitado() {
-        return eurosHabilitado;
-    }
-
-    // Método para  los RadioButtons
     public void configurarCampos(int idSeleccionado) {
         if (idSeleccionado == R.id.rbEuros) {
             dolaresHabilitado.setValue(true);
@@ -43,40 +55,31 @@ public class MainActivityViewModel extends AndroidViewModel {
             dolaresHabilitado.setValue(false);
             eurosHabilitado.setValue(true);
         }
+        resultadoDolares.setValue("");
+        resultadoEuros.setValue("");
     }
 
-    public void calcular(String valor, boolean esDolar) {
+    public void calcular(String inDolares, String inEuros) {
         try {
-            double num = Double.parseDouble(valor);
-            double res;
-            if (esDolar) {
-                res = modelo.convertirAEuros(num);
-                resultado.setValue(res + " EUR");
+            if (Boolean.TRUE.equals(dolaresHabilitado.getValue())) {
+                if (inDolares.isEmpty()) {
+                    mensajeToast.setValue("Por favor, ingrese un monto en USD");
+                    return;
+                }
+                double res = modelo.convertirAEuros(Double.parseDouble(inDolares));
+                resultadoEuros.setValue(String.format(Locale.getDefault(), "%.2f EUR", res));
+            } else if (Boolean.TRUE.equals(eurosHabilitado.getValue())) {
+                if (inEuros.isEmpty()) {
+                    mensajeToast.setValue("Por favor, ingrese un monto en EUR");
+                    return;
+                }
+                double res = modelo.convertirADolares(Double.parseDouble(inEuros));
+                resultadoDolares.setValue(String.format(Locale.getDefault(), "%.2f USD", res));
             } else {
-                res = modelo.convertirADolares(num);
-                resultado.setValue(res + " USD");
+                mensajeToast.setValue("Seleccione una opción de conversión");
             }
-        } catch (Exception e) {
-            resultado.setValue("Error");
-        }
-    }
-
-    public void calcularVersionDos(String inDolares, String inEuros) {
-        try {
-            double res;
-
-            if(dolaresHabilitado.getValue() && !eurosHabilitado.getValue()) {
-                res = modelo.convertirAEuros(Double.parseDouble(inDolares));
-                resultado.setValue(res + " EUR");
-            } else if (eurosHabilitado.getValue() && !dolaresHabilitado.getValue()) {
-                res = modelo.convertirADolares(Double.parseDouble(inEuros));
-                resultado.setValue(res + " USD");
-            } else {
-                resultado.setValue("NADA");
-            }
-        } catch (Exception e) {
-            resultado.setValue("ERROR");
-            Log.d("ERROR", e.toString());
+        } catch (NumberFormatException e) {
+            mensajeToast.setValue("Error en los datos ingresados");
         }
     }
 }
