@@ -12,7 +12,7 @@
     <string name="convertir_a_euros">Convertir a Euros</string>
     <string name="convertir">Convertir</string>
     <string name="tipo_de_cambio">Tipo de cambio</string>
-    <string name="_1usd_0_87eur">1USD = 0.87EUR</string>
+    <string name="_1usd_0_87eur">1USD = 0.92EUR</string>
     <string name="monto_en_dolares">Monto en Dólares</string>
     <string name="monto_en_euros">Monto en Euros</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.s23.practico1;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -10,67 +12,68 @@ import java.util.Locale;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
-    private final ConversorModelo modelo;
-    private final MutableLiveData<String> resultadoDolares = new MutableLiveData<>("");
-    private final MutableLiveData<String> resultadoEuros = new MutableLiveData<>("");
-    private final MutableLiveData<Integer> rbSeleccionadoId = new MutableLiveData<>(R.id.rbEuros);
-    private final MutableLiveData<Double> tipoCambioActual = new MutableLiveData<>(0.92);
+    private final MutableLiveData<ConversorModelo> conversorModelo = new MutableLiveData<>(new ConversorModelo());
     private final SingleLiveEvent<String> mensajeToast = new SingleLiveEvent<>();
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
-        modelo = new ConversorModelo(tipoCambioActual.getValue());
     }
-
-    public LiveData<String> getResultadoDolares() { return resultadoDolares; }
-    public LiveData<String> getResultadoEuros() { return resultadoEuros; }
-    public LiveData<Integer> getRbSeleccionadoId() { return rbSeleccionadoId; }
-    public LiveData<Double> getTipoCambioActual() { return tipoCambioActual; }
+    public LiveData<ConversorModelo> getConversorModelo() { return conversorModelo; }
     public LiveData<String> getMensajeToast() { return mensajeToast; }
-
     public void actualizarTipoCambio(String nuevoValor) {
         try {
-            if (nuevoValor == null || nuevoValor.isEmpty()) {
-                mensajeToast.setValue("Ingrese un valor de cambio");
-                return;
+            ConversorModelo cm = conversorModelo.getValue();
+            if(cm != null) {
+                if (nuevoValor == null || nuevoValor.isEmpty()) {
+                    mensajeToast.setValue("Ingrese un valor de cambio");
+                    return;
+                }
+
+                double valor = Double.parseDouble(nuevoValor);
+                cm.setTipoDeCambio(valor);
+                conversorModelo.setValue(cm);
+                mensajeToast.setValue("Tipo de cambio actualizado");
             }
-            double valor = Double.parseDouble(nuevoValor);
-            tipoCambioActual.setValue(valor);
-            modelo.setTipoDeCambio(valor);
-            mensajeToast.setValue("Tipo de cambio actualizado");
         } catch (NumberFormatException e) {
             mensajeToast.setValue("Valor de cambio inválido");
         }
     }
-
-    public void configurarCampos(int idSeleccionado) {
-        rbSeleccionadoId.setValue(idSeleccionado);
-        // Al limpiar aquí, la Vista reaccionará borrando el texto
-        resultadoDolares.setValue("");
-        resultadoEuros.setValue("");
+    public void dolaresChecked() {
+        ConversorModelo cm = conversorModelo.getValue();
+        if(cm != null) {
+            cm.checkedRBDolares();
+            conversorModelo.setValue(cm);
+        }
     }
-
+    public void eurosChecked() {
+        ConversorModelo cm = conversorModelo.getValue();
+        if(cm != null) {
+            cm.checkedRBEuros();
+            conversorModelo.setValue(cm);
+        }
+    }
     public void calcular(String inDolares, String inEuros) {
-        Integer id = rbSeleccionadoId.getValue();
-        if (id == null) return;
+        ConversorModelo cm = conversorModelo.getValue();
+        if (cm == null) return;
 
         try {
-            if (id == R.id.rbEuros) {
+            if (cm.isRbEuros()) {
                 if (inDolares.isEmpty()) {
                     mensajeToast.setValue("Ingrese monto en USD");
                     return;
                 }
-                double res = modelo.convertirAEuros(Double.parseDouble(inDolares));
-                resultadoEuros.setValue(String.format(Locale.getDefault(), "%.2f EUR", res));
-            } else if (id == R.id.rbDolares) {
+                cm.convertirAEuros(inDolares);
+                conversorModelo.setValue(cm);
+            } else if (cm.isRbDolares()) {
                 if (inEuros.isEmpty()) {
                     mensajeToast.setValue("Ingrese monto en EUR");
                     return;
                 }
-                double res = modelo.convertirADolares(Double.parseDouble(inEuros));
-                resultadoDolares.setValue(String.format(Locale.getDefault(), "%.2f USD", res));
+                cm.convertirADolares(inEuros);
+                conversorModelo.setValue(cm);
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
+            Log.d("ERROR - VIEWMODEL", e.toString());
             mensajeToast.setValue("Error en los datos");
         }
     }

@@ -25,29 +25,30 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, msj, Toast.LENGTH_SHORT).show();
         });
 
-        vm.getTipoCambioActual().observe(this, valor -> {
-            binding.etTipoCambio.setText(String.valueOf(valor));
-        });
+        vm.getConversorModelo().observe(this, conversorModelo -> {
+            //input Dolares
+            binding.etDolares.setText(conversorModelo.getResultadoDolares());
+            binding.etDolares.setEnabled(conversorModelo.isInputDolares());
+            //input Euros
+            binding.etEuros.setText(conversorModelo.getResultadoEuros());
+            binding.etEuros.setEnabled(conversorModelo.isInputEuros());
 
-        // Observadores de resultados (se limpian solos cuando el VM manda "")
-        vm.getResultadoDolares().observe(this, res -> {
-            binding.etDolares.setText(res);
-        });
+            //radio buttons
+            binding.rbDolares.setChecked(conversorModelo.isRbDolares());
+            binding.rbEuros.setChecked(conversorModelo.isRbEuros());
 
-        vm.getResultadoEuros().observe(this, res -> {
-            binding.etEuros.setText(res);
-        });
-
-        // Observador basado en el ID seleccionado (Sin booleanos externos)
-        vm.getRbSeleccionadoId().observe(this, id -> {
-            binding.etDolares.setEnabled(id == R.id.rbEuros);
-            binding.etEuros.setEnabled(id == R.id.rbDolares);
+            //tipo de cambio
+            binding.etTipoCambio.setText(String.valueOf(conversorModelo.getTipoDeCambio()));
         });
 
         // --- Listeners ---
 
-        binding.rgTipoConversion.setOnCheckedChangeListener((group, checkedId) -> {
-            vm.configurarCampos(checkedId);
+        binding.rbDolares.setOnClickListener(v -> {
+            vm.dolaresChecked();
+        });
+
+        binding.rbEuros.setOnClickListener(v -> {
+            vm.eurosChecked();
         });
 
         binding.btnCambiarValor.setOnClickListener(v -> {
